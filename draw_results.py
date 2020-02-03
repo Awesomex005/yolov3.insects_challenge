@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 # 此文件中定义画图相关的函数
+import matplotlib
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.image import imread
