@@ -9,6 +9,8 @@ Generate image: compare_gtbbox_area_to_image_area.png
 ```
 ![compare_gtbbox_area_to_image_area-train](readme_imgs/compare_gtbbox_area_to_image_area-train.png)
 
+Compare to the whole image, the gtbboxes area ratio are really small, most of them fall in between 0.1%~1%, even the biggest one is just around 2.6%.
+
 python inspect_data.py --data_path ../insects/val/
 ```
 valid Images: 245 total objects: 1856
