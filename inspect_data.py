@@ -3,7 +3,7 @@ matplotlib.use('Agg')
 
 import numpy as np
 import matplotlib.pyplot as plt
-from insects_reader import get_insect_names, get_annotations
+from insects_reader import get_insect_names, get_annotations, INSECT_NAMES
 import argparse
 
 def x_histograms(data, num_bins, name):
@@ -45,6 +45,15 @@ def inspect_gtbboxes(records):
     x_histograms(gtbbox_area_scales, 200, "compare_gtbbox_area_to_image_area")
     return
 
+def obj_clses_distribution(records):
+    class_dsb = dict()
+    obj_clses = [record['gt_class'] for record in records]
+    obj_clses = np.array(obj_clses)
+    obj_clses = np.concatenate(obj_clses)
+    print("\nobjs distribution:")
+    for i, class_name in enumerate(INSECT_NAMES):
+        print("{} {} \t{}".format(i, class_name, np.sum(obj_clses==i)))
+
 def parse_args():
     parser = argparse.ArgumentParser("Data summary")
     parser.add_argument(
@@ -61,4 +70,5 @@ if __name__ == '__main__':
     records = get_annotations(get_insect_names(), args.data_path)
     data_summary(records)
     inspect_gtbboxes(records)
+    obj_clses_distribution(records)
 
