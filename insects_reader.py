@@ -32,6 +32,8 @@ def get_insect_names():
 
 
 # 获取昆虫标注信息
+# one record map to one images, one record can contain multi objs.
+# gtbbox is represent in xywh, in absolute value.
 def get_annotations(cname2cid, datadir):
     filenames = os.listdir(os.path.join(datadir, 'annotations', 'xmls'))
     records = []
