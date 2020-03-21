@@ -3,6 +3,7 @@
 import time
 import os
 import numpy as np
+import json
 import paddle
 import paddle.fluid as fluid
 from paddle.fluid.dygraph.base import to_variable
@@ -19,8 +20,8 @@ ANCHOR_MASKS = [[6, 7, 8], [3, 4, 5], [0, 1, 2]]
 IGNORE_THRESH = .7
 NUM_CLASSES = 7
 
-TRAINDIR = 'insects/train'
-VALIDDIR = 'insects/val'
+TRAINDIR = '../insects/train'
+VALIDDIR = '../insects/val'
 
 # train.py
 if __name__ == '__main__':
@@ -33,7 +34,9 @@ if __name__ == '__main__':
         train_loader = multithread_loader(TRAINDIR, batch_size= 10, mode='train')
         valid_loader = multithread_loader(VALIDDIR, batch_size= 10, mode='valid')
 
-        MAX_EPOCH = 100  # 提升点： 可以改变训练的轮数
+        losses = []
+        MAX_EPOCH = 50  # 提升点： 可以改变训练的轮数
+        MAX_EPOCH = 20
         for epoch in range(MAX_EPOCH):
             for i, data in enumerate(train_loader()):
                 img, gt_boxes, gt_labels, img_scale = data
@@ -52,13 +55,21 @@ if __name__ == '__main__':
                 loss.backward()
                 opt.minimize(loss)
                 model.clear_gradients()
-                if i % 1 == 0:
+                if i % 5 == 0:
                     timestring = time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(time.time()))
                     print('{}[TRAIN]epoch {}, iter {}, output loss: {}'.format(timestring, epoch, i, loss.numpy()))
+                    losses.append(loss.numpy().item())
 
             # save params of model
             if (epoch % 5 == 0) or (epoch == MAX_EPOCH -1):
                 fluid.save_dygraph(model.state_dict(), 'yolo_epoch{}'.format(epoch))
+                # 保存loss数据
+                l_data = {
+                    'x_range' : [5, 5*(len(losses)+1), 5],
+                    'losses' : losses,
+                }
+                with open('losses.json', 'w') as f:
+                    json.dump(l_data, f)
                 
             # 每个epoch结束之后在验证集上进行测试
             model.eval()
